@@ -1,0 +1,5 @@
+﻿LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+raylib.lib(rmodels.obj) : error LNK2019: unresolved external symbol __ltof3 referenced in function _cgltf_component_read_float
+raylib.lib(rtextures.obj) : error LNK2019: unresolved external symbol __dtoul3_legacy referenced in function _stbir__calculate_region_transform
+raylib.lib(rglfw.obj) : error LNK2001: unresolved external symbol __dtoul3_legacy
+C:\Users\usuario\source\repos\Summer_Splash\SummerSplash\Debug\SummerSplash.exe : fatal error LNK1120: 2 unresolved externals
