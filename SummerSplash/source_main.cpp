@@ -1,14 +1,14 @@
 ﻿#include "raylib.h"
 #include "raymath.h"
 #include <iostream>
+#include "levels.h"
 
 #define GRAVITY 15.0f
-#define JUMP_FORCE 5.5f
+#define JUMP_FORCE 7.5f
 #define GROUND_Y 1.0f
 
 typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, ENDING } GameScreen;
-
-BoundingBox wall1, wall2;
+typedef enum GameLevels { LEVEL01 = 0, LEVEL02 = 1 } GameLevels;
 Vector3 oldPosition;
 float yaw = 0.0f, pitch = 0.0f;
 bool isJumping = false;
@@ -21,15 +21,9 @@ struct Player {
 	BoundingBox boundingBox;
 };
 
-// ==================== design wallS (test) ====================
-void InitWalls() {
-	wall1 = { Vector3{-4.5f, 0, -5}, Vector3{-3.5f, 5, 5} };
-	wall2 = { Vector3{3.5f, 0, -5}, Vector3{4.5f, 5, 5} };
-}
-
-void DrawWallsTest() {
-	DrawCube({ -4, 2.5f, 0 }, 1, 5, 10, YELLOW);
-	DrawCube({ 4, 2.5f, 0 }, 1, 5, 10, YELLOW);
+void DrawWallsTest() { // never used
+	DrawCube({ -16, 2.5f, 0 }, 1, 5, 10, YELLOW);
+	DrawCube({ 16, 2.5f, 0 }, 1, 5, 10, YELLOW);
 }
 
 // ==================== camera rotation ====================
@@ -82,6 +76,13 @@ void UpdatePlayerBoundingBox(Player &player) {
 	};
 }
 
+/// only for debugging
+void DrawCollisions() {
+	for (int i = 0; i < 4; i++) {
+		DrawBoundingBox(level01Collisions.walls[i], BLUE);
+	}
+}
+
 // ==================== gravity ====================
 void ApplyGravity(Player &player) {
 	player.velocityY -= GRAVITY * GetFrameTime();
@@ -95,8 +96,14 @@ void ApplyGravity(Player &player) {
 	}
 }
 
+// ================== design levels ======================
+void loadLevels(GameLevels currentLevel) {
+	if (currentLevel == LEVEL01) {
+		DrawLevel01();
+	}
+}
 // ==================== game logic ====================
-void UpdateGame(Camera3D *camera, float sensitivity, float moveSpeed, Player &player) {
+void UpdateGame(Camera3D *camera, float sensitivity, float moveSpeed, Player &player, GameLevels currentLevel) {
 	oldPosition = player.position;
 	CameraRotation(camera, sensitivity);
 	SetKeyboard(camera, moveSpeed, player);
@@ -104,9 +111,13 @@ void UpdateGame(Camera3D *camera, float sensitivity, float moveSpeed, Player &pl
 	UpdatePlayerBoundingBox(player);
 
 	// Detect collision
-	if (CheckCollisionBoxes(player.boundingBox, wall1) || CheckCollisionBoxes(player.boundingBox, wall2)) {
-		player.position = oldPosition;
-		UpdatePlayerBoundingBox(player);
+	if (currentLevel == LEVEL01) {
+		for (int i = 0; i < 4; i++) {
+			if (CheckCollisionBoxes(player.boundingBox, level01Collisions.walls[i])) {
+				player.position = oldPosition;
+				UpdatePlayerBoundingBox(player);
+			}
+		}
 	}
 
 	camera->position.x = player.position.x;
@@ -114,11 +125,12 @@ void UpdateGame(Camera3D *camera, float sensitivity, float moveSpeed, Player &pl
 	camera->position.z = player.position.z + 6;
 }
 
-// ==================== Renderización ====================
-void RenderGame(Camera3D camera) {
+// ==================== render ====================
+void RenderGame(Camera3D camera, GameLevels currentLevel) {
 	BeginMode3D(camera);
-	DrawGrid(10, 2.0f);
-	DrawWallsTest();
+	DrawGrid(10, 5.0f);
+	loadLevels(currentLevel);
+	DrawCollisions(); // debugging
 	EndMode3D();
 }
 
@@ -127,45 +139,45 @@ int main() {
 	const int screenWidth = 800;
 	const int screenHeight = 600;
 
-	InitWindow(screenWidth, screenHeight, "Summer Splash! 3D");
+	InitWindow(screenWidth, screenHeight, "Proyect game");
 
+	// ==== Set camera  ====
 	Camera3D camera = { 0 };
 	camera.position = { 0.0f, 2.0f, 4.0f };
 	camera.target = { 0.0f, 2.0f, 0.0f };
 	camera.up = { 0.0f, 1.0f, 0.0f };
 	camera.fovy = 60.0f;
 	camera.projection = CAMERA_PERSPECTIVE;
-
+	// =====================================
 	float sensitivity = 0.3f;
-	float moveSpeed = 0.18f;
+	float moveSpeed = 0.20f;
+	// ==================================
 
 	GameScreen currentScreen = TITLE;
 	SetTargetFPS(60);
-
-	InitWalls();
 
 	// player collision initialize
 	Player player = { {0, 1.0f, 0}, 3.0f, 0.0f, true };
 	UpdatePlayerBoundingBox(player);
 
 	while (!WindowShouldClose()) {
-		// ** Debugging: **
-		char debugText[100];
-		sprintf_s(debugText, "Y: %.2f | VelY: %.2f | Suelo: %s",
-			player.position.y, player.velocityY, player.isGrounded ? "SI" : "NO");
+		/*char debugText[100];
+		sprintf_s(debugText, "Y: %.2f | VelY: %.2f | Floor: %s",
+			player.position.y, player.velocityY, player.isGrounded ? "YES" : "NO");*/
 
 		BeginDrawing();
 		ClearBackground(BLACK);
 
 		if (currentScreen == TITLE) {
-			DrawText("Summer Splash! Test Alpha 0.0.1", 20, 20, 40, WHITE);
-			DrawText("Presiona ENTER para iniciar", 120, 220, 20, WHITE);
+			DrawText("SummerFPS Test Alpha 0.0.1", 20, 20, 40, WHITE);
+			DrawText("Press ENTER to play...", 120, 220, 20, WHITE);
 			if (IsKeyPressed(KEY_ENTER)) currentScreen = GAMEPLAY;
 		}
-		else if (currentScreen == GAMEPLAY) {
-			DrawText(debugText, 10, 10, 20, RED);
-			UpdateGame(&camera, sensitivity, moveSpeed, player);
-			RenderGame(camera);
+		else if (currentScreen == GAMEPLAY) { // Current game
+			GameLevels currentLevel = LEVEL01;
+			//DrawText(debugText, 10, 10, 20, RED); // ** Debugging **
+			UpdateGame(&camera, sensitivity, moveSpeed, player, currentLevel);
+			RenderGame(camera, currentLevel);
 		}
 
 		EndDrawing();
