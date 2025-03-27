@@ -143,7 +143,7 @@ int main() {
 
 	// ==== Set camera  ====
 	Camera3D camera = { 0 };
-	camera.position = { 0.0f, 2.0f, 4.0f };
+	camera.position = { 0.0f, 0.0f, 0.0f };
 	camera.target = { 0.0f, 2.0f, 0.0f };
 	camera.up = { 0.0f, 1.0f, 0.0f };
 	camera.fovy = 60.0f;
@@ -169,13 +169,14 @@ int main() {
 		ClearBackground(BLACK);
 
 		if (currentScreen == TITLE) {
-			DrawText("SummerFPS Test Alpha 0.0.1", 20, 20, 40, WHITE);
+			DrawText("Game FPS Test Alpha 0.0.1", 20, 20, 40, WHITE);
 			DrawText("Press ENTER to play...", 120, 220, 20, WHITE);
 			if (IsKeyPressed(KEY_ENTER)) currentScreen = GAMEPLAY;
 		}
 		else if (currentScreen == GAMEPLAY) { // Current game
 			GameLevels currentLevel = LEVEL01;
 			//DrawText(debugText, 10, 10, 20, RED); // ** Debugging **
+
 			UpdateGame(&camera, sensitivity, moveSpeed, player, currentLevel);
 			RenderGame(camera, currentLevel);
 		}
