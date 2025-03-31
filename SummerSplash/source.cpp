@@ -1,18 +1,18 @@
 ﻿#include "raylib.h"
 #include "raymath.h"
-#include <iostream>
 #include "levels.h"
 #include "core.h"
+#include "menu.h"
+#include <iostream>
 
-typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, ENDING } GameScreen;
+typedef enum GameScreen { LOGO = 0, MENU, GAMEPLAY, ENDING } GameScreen;
 
 void DrawWallsTest() { // never used
 	DrawCube({ -16, 2.5f, 0 }, 1, 5, 10, YELLOW);
 	DrawCube({ 16, 2.5f, 0 }, 1, 5, 10, YELLOW);
 }
 
-/// only for debugging
-void DrawCollisions() {
+void DrawCollisions() { // only for debugging
 	for (int i = 0; i < 4; i++) {
 		DrawBoundingBox(level01Collisions.walls[i], BLUE);
 	}
@@ -53,7 +53,11 @@ int main() {
 	float moveSpeed = 0.20f;
 	// ====================================
 
-	GameScreen currentScreen = TITLE;
+	GameScreen currentScreen = MENU;
+	Font customFont = LoadFont("assets/fonts/Tiny5-Regular.ttf"); // Load custom font
+	Texture2D button = LoadTexture("textures/select.png"); // select button
+	Texture2D logoGame = LoadTexture("textures/logo.png"); // logo
+
 	SetTargetFPS(60);
 
 	// player collision initialize
@@ -68,14 +72,15 @@ int main() {
 		BeginDrawing();
 		ClearBackground(BLACK);
 
-		if (currentScreen == TITLE) {
-			DrawText("Game FPS Test Alpha 0.0.1", 20, 20, 40, WHITE);
-			DrawText("Press ENTER to play...", 120, 220, 20, WHITE);
+		if (currentScreen == MENU) {
+			// menu screen
+			DrawMenu(customFont, button, logoGame);
+			LoadVersion(customFont);
 			if (IsKeyPressed(KEY_ENTER)) currentScreen = GAMEPLAY;
 		}
 		else if (currentScreen == GAMEPLAY) { // Current game
 			GameLevels currentLevel = LEVEL01;
-			DrawText(debugText, 10, 10, 20, RED); // ?? Debugging
+			DrawText(debugText, 10, 10, 20, BLUE); // ?? Debugging
 
 			UpdateGame(&camera, sensitivity, moveSpeed, player, currentLevel);
 			RenderGame(camera, currentLevel);
@@ -83,7 +88,9 @@ int main() {
 
 		EndDrawing();
 	}
-
+	UnloadFont(customFont);
+	UnloadTexture(button);
+	UnloadTexture(logoGame);
 	CloseWindow();
 	return 0;
 }

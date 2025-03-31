@@ -127,6 +127,7 @@
   <ItemGroup>
     <ClCompile Include="core.cpp" />
     <ClCompile Include="levels.cpp" />
+    <ClCompile Include="menu.cpp" />
     <ClCompile Include="source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +136,7 @@
   <ItemGroup>
     <ClInclude Include="core.h" />
     <ClInclude Include="levels.h" />
+    <ClInclude Include="menu.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +144,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\..\Downloads\sandTexture.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\..\..\..\Downloads\Tiny5\Tiny5-Regular.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
