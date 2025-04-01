@@ -25,13 +25,19 @@ void loadLevels(GameLevels currentLevel) {
 	}
 }
 
+// ===================== graphics ======================
+void getGraphicsFirstPersonPlayer(Texture2D hand1) {
+	DrawTextureEx(hand1, { 550,310 }, 4, 0.34f, WHITE);
+}
+
 // ==================== render ====================
-void RenderGame(Camera3D camera, GameLevels currentLevel) {
+void RenderGame(Camera3D camera, GameLevels currentLevel, Texture2D hand1) {
 	BeginMode3D(camera);
 	DrawGrid(10, 5.0f);
 	loadLevels(currentLevel);
 	DrawCollisions(); // debugging
 	EndMode3D();
+	getGraphicsFirstPersonPlayer(hand1);
 }
 
 // ==================== main function ====================
@@ -54,11 +60,14 @@ int main() {
 	// ====================================
 
 	GameScreen currentScreen = MENU;
+	// =============== load resources ===============================================
 	Font customFont = LoadFont("assets/fonts/Tiny5-Regular.ttf"); // Load custom font
 	Texture2D button = LoadTexture("textures/select.png"); // select button
 	Texture2D logoGame = LoadTexture("textures/logo.png"); // logo
+	Texture2D hand1 = LoadTexture("textures/hand1.png");
+	// =============================================================================
 
-	SetTargetFPS(60);
+	SetTargetFPS(60); // 60 fps
 
 	// player collision initialize
 	Player player = { {0, 1.0f, 0}, 3.0f, 0.0f, true };
@@ -83,13 +92,14 @@ int main() {
 			DrawText(debugText, 10, 10, 20, BLUE); // ?? Debugging
 
 			UpdateGame(&camera, sensitivity, moveSpeed, player, currentLevel);
-			RenderGame(camera, currentLevel);
+			RenderGame(camera, currentLevel, hand1);
 		}
 
 		EndDrawing();
 	}
 	UnloadFont(customFont);
 	UnloadTexture(button);
+	UnloadTexture(hand1);
 	UnloadTexture(logoGame);
 	CloseWindow();
 	return 0;
