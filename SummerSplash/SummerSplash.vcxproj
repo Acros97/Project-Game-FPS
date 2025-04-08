@@ -129,6 +129,7 @@
     <ClCompile Include="levels.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="source.cpp" />
+    <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -138,6 +139,7 @@
     <ClInclude Include="levels.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SummerSplash.rc" />
