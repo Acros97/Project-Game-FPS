@@ -82,13 +82,20 @@ void ApplyGravity(Player &player) {
 	}
 }
 
+// ===================== graphics ======================
+void getGraphicsFirstPersonPlayer(Texture2D hand1, float time) {
+	float offsetY = sin(time * 2.0f) * 10;
+	DrawTextureEx(hand1, { 550, 330 + offsetY }, 4, 0.34f, WHITE);
+}
+
 // ==================== game logic ====================
 void UpdateGame(Camera3D *camera, float sensitivity, float moveSpeed, Player &player, GameLevels currentLevel) {
 	oldPosition = player.position;
-	CameraRotation(camera, sensitivity);
-	SetKeyboard(camera, moveSpeed, player);
-	ApplyGravity(player);
-	UpdatePlayerBoundingBox(player);
+
+	CameraRotation(camera, sensitivity); // player camera rotation
+	SetKeyboard(camera, moveSpeed, player); // player movement
+	ApplyGravity(player); // jump gravity
+	UpdatePlayerBoundingBox(player); // player collision
 
 	// Detect collision
 	if (currentLevel == LEVEL01) {
