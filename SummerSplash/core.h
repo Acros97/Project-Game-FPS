@@ -17,3 +17,4 @@ void UpdatePlayerBoundingBox(Player &player);
 void ApplyGravity(Player &player);
 void UpdateGame(Camera3D *camera, float sensitivity, float moveSpeed, Player &player, GameLevels currentLevel);
 void getGraphicsFirstPersonPlayer(Texture2D hand1, float time);
+void BoundingGravityObject(Model model);

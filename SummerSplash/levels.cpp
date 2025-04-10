@@ -1,16 +1,22 @@
 #include "raylib.h"
 #include "raymath.h"
+#include "core.h"
+#include <vector>
 // levels must be designed
 
 struct Level {
 	BoundingBox walls[4]; // four walls
 };
 
-void DrawLevel01() {
+void DrawLevel01(std::vector<Model> models) {
 	DrawCube({ -25, 5, 0 }, 1, 10, 50, RED);
 	DrawCube({ 25, 5, 0 }, 1, 10, 50, RED); // put length over X position
 	DrawCube({ 0,  5, 25 }, 50, 10, 1, RED); // put length over Y position
 	DrawCube({ 0, 5,-25 }, 50, 10, 1, RED);
+	for (int i = 0; i < 1; i++)
+	{
+		BoundingGravityObject(models[i]);
+	}
 }
 
 struct Level level01Collisions = {
