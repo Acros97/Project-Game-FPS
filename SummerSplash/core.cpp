@@ -82,6 +82,14 @@ void ApplyGravity(Player &player) {
 	}
 }
 
+void BoundingGravityObject(Model model) {
+	float time = GetTime();
+	float verticalOffset = sinf(time * 2.0f) * 0.25f;
+	float rotationY = time * 45.0f;
+	Vector3 itemBasePosition = { 2.0f,1.0f + verticalOffset,0.0 };
+	DrawModelEx(model, itemBasePosition, { 0,1,0 }, rotationY, { 1.0f,1.0f,1.0f }, WHITE);
+}
+
 // ===================== graphics ======================
 void getGraphicsFirstPersonPlayer(Texture2D hand1, float time) {
 	float offsetY = sin(time * 2.0f) * 10;

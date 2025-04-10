@@ -5,12 +5,13 @@
 #include "menu.h"
 #include "window.h"
 #include <iostream>
+#include <vector>
 
 typedef enum GameScreen { LOGO = 0, MENU = 1, GAMEPLAY = 2, ENDING = 3 } GameScreen;
-// display options
 typedef enum MenuOption { BEGIN_GAME = 0, OPTIONS = 1, EXIT = 2 } GameOptions;
 int currentOption = BEGIN_GAME;
 const int optionCount = 3;
+std::vector<Model> models;
 
 Vector2 optionPositions[optionCount] = {
 	{90,270}, // BEGIN_GAME
@@ -25,14 +26,19 @@ void DrawCollisions() { // only for debugging
 }
 
 // ================== load levels ======================
-void loadLevels(GameLevels currentLevel) {
+void loadLevels(GameLevels currentLevel, std::vector<Model> models) {
 	switch (currentLevel) {
 	case LEVEL01:
-		DrawLevel01();
+		DrawLevel01(models);
 	default:
 		break;
 	}
 }
+
+void loadModels() {
+	models.push_back(LoadModel("models/test.glb"));
+}
+
 // ========================== menu update ======================================= //
 void UpdateMenu(Texture2D button) {
 	if (IsKeyPressed(KEY_DOWN)) {
@@ -49,10 +55,10 @@ void UpdateMenu(Texture2D button) {
 }
 
 // ============================= render game ========================================= //
-void RenderGame(Camera3D camera, GameLevels currentLevel, Texture2D hand1, float time) {
+void RenderGame(Camera3D camera, GameLevels currentLevel, Texture2D hand1, float time, std::vector<Model> models) {
 	BeginMode3D(camera);
 	DrawGrid(10, 5.0f);
-	loadLevels(currentLevel);
+	loadLevels(currentLevel, models);
 	DrawCollisions(); // debugging
 	EndMode3D();
 	getGraphicsFirstPersonPlayer(hand1, time);
@@ -81,6 +87,7 @@ int main() {
 	Texture2D button = LoadTexture("textures/select.png"); // select button
 	Texture2D logoGame = LoadTexture("textures/logo.png"); // logo
 	Texture2D hand1 = LoadTexture("textures/hand1.png");
+	loadModels();
 	// ============================================================================= //
 	SetTargetFPS(60); // 60 fps
 
@@ -117,7 +124,7 @@ int main() {
 
 			UpdateGame(&camera, sensitivity, moveSpeed, player, currentLevel);
 			time += GetFrameTime();
-			RenderGame(camera, currentLevel, hand1, time);
+			RenderGame(camera, currentLevel, hand1, time, models);
 		}
 
 		EndDrawing();
