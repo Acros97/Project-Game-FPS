@@ -5,4 +5,4 @@ struct  Level {
 };
 extern Level level01Collisions;
 
-void DrawLevel01(std::vector<Model> models);
+void DrawLevel01();

@@ -1,5 +1,14 @@
-﻿LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-raylib.lib(rmodels.obj) : error LNK2019: unresolved external symbol __ltof3 referenced in function _cgltf_component_read_float
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (SummerSplash.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  core.cpp
+c:\users\usuario\source\repos\summerfps\summersplash\core.cpp(29): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\usuario\source\repos\summerfps\summersplash\core.cpp(80): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  levels.cpp
+  menu.cpp
+  source.cpp
+  window.cpp
+  Generating Code...
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
 raylib.lib(rtextures.obj) : error LNK2019: unresolved external symbol __dtoul3_legacy referenced in function _stbir__calculate_region_transform
 raylib.lib(rglfw.obj) : error LNK2001: unresolved external symbol __dtoul3_legacy
-C:\Users\usuario\source\repos\Summer_Splash\SummerSplash\Debug\SummerSplash.exe : fatal error LNK1120: 2 unresolved externals
+raylib.lib(rmodels.obj) : error LNK2019: unresolved external symbol __ltof3 referenced in function _cgltf_component_read_float
+C:\Users\usuario\source\repos\SummerFPS\Debug\SummerFPS.exe : fatal error LNK1120: 2 unresolved externals

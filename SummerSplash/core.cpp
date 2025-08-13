@@ -1,26 +1,12 @@
-#include "raylib.h"
-#include "raymath.h"
+#include "core.h"
 #include "levels.h"
 
-#define GRAVITY 15.0f
-#define JUMP_FORCE 7.5f
-#define GROUND_Y 1.0f
+std::vector<Collectable> worldObjects;
 
 Vector3 oldPosition;
 float yaw = 0.0f, pitch = 0.0f;
-bool isJumping = false;
-typedef enum GameLevels { LEVEL01 = 0, LEVEL02 = 1 } GameLevels;
 
-struct Player {
-	Vector3 position;
-	float speed;
-	float velocityY;
-	bool isGrounded;
-	BoundingBox boundingBox;
-};
-
-// ==================== camera rotation ====================
-void CameraRotation(Camera3D *camera, float sensitivity) {
+void CameraRotation(Camera3D* camera, float sensitivity) {
 	Vector2 mousePosition = GetMousePosition();
 	Vector2 center = { GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f };
 
@@ -44,8 +30,7 @@ void CameraRotation(Camera3D *camera, float sensitivity) {
 	HideCursor();
 }
 
-// ==================== player movement ====================
-void SetKeyboard(Camera3D *camera, float moveSpeed, Player &player) {
+void SetKeyboard(Camera3D* camera, float moveSpeed, Player& player) {
 	Vector3 forward = Vector3Normalize(Vector3Subtract(camera->target, camera->position));
 	forward.y = 0;
 	Vector3 right = Vector3Normalize(Vector3CrossProduct(camera->up, forward));
@@ -56,25 +41,34 @@ void SetKeyboard(Camera3D *camera, float moveSpeed, Player &player) {
 	if (IsKeyDown(KEY_D)) player.position = Vector3Subtract(player.position, Vector3Scale(right, moveSpeed));
 
 	if (IsKeyPressed(KEY_SPACE) && player.isGrounded) {
-		player.velocityY = JUMP_FORCE;  // apply jump force
+		player.velocityY = JUMP_FORCE;
 		player.isGrounded = false;
 	}
 }
 
-// ==================== collision ====================
-void UpdatePlayerBoundingBox(Player &player) {
+void UpdatePlayerBoundingBox(Player& player) {
 	player.boundingBox = {
 		Vector3 {player.position.x - 0.5f, player.position.y, player.position.z - 0.5f},
 		Vector3 {player.position.x + 0.5f, player.position.y + 2, player.position.z + 0.5f}
 	};
 }
 
-// ==================== gravity ====================
-void ApplyGravity(Player &player) {
+void CheckObjectCollection(Player& player) {
+	for (auto& obj : worldObjects) {
+		if (!obj.active) continue;
+		float dist = Vector3Distance(player.position, obj.position);
+		if (dist < 2.0f) {
+			obj.active = false;
+			player.playerInventory.push_back(obj);
+			std::cout << "Objeto recolectado\n";
+		}
+	}
+}
+
+void ApplyGravity(Player& player) {
 	player.velocityY -= GRAVITY * GetFrameTime();
 	player.position.y += player.velocityY * GetFrameTime();
 
-	// if the player touches the floor
 	if (player.position.y <= GROUND_Y) {
 		player.position.y = GROUND_Y;
 		player.velocityY = 0;
@@ -86,26 +80,35 @@ void BoundingGravityObject(Model model) {
 	float time = GetTime();
 	float verticalOffset = sinf(time * 2.0f) * 0.25f;
 	float rotationY = time * 45.0f;
-	Vector3 itemBasePosition = { 2.0f,1.0f + verticalOffset,0.0 };
+	Vector3 itemBasePosition = { 2.0f,1.0f + verticalOffset,0.0f };
 	DrawModelEx(model, itemBasePosition, { 0,1,0 }, rotationY, { 1.0f,1.0f,1.0f }, WHITE);
 }
 
-// ===================== graphics ======================
 void getGraphicsFirstPersonPlayer(Texture2D hand1, float time) {
 	float offsetY = sin(time * 2.0f) * 10;
 	DrawTextureEx(hand1, { 550, 330 + offsetY }, 4, 0.34f, WHITE);
 }
 
-// ==================== game logic ====================
-void UpdateGame(Camera3D *camera, float sensitivity, float moveSpeed, Player &player, GameLevels currentLevel) {
+void loadModels01() {
+	Collectable item;
+	item.model = LoadModel("models/test.glb");
+	item.position = { 0,1,0 };
+	item.box = GetMeshBoundingBox(item.model.meshes[0]);
+	item.box.min = Vector3Add(item.box.min, item.position);
+	item.box.max = Vector3Add(item.box.max, item.position);
+	item.active = true;
+	worldObjects.push_back(item);
+}
+
+void UpdateGame(Camera3D* camera, float sensitivity, float moveSpeed, Player& player, GameLevels currentLevel) {
 	oldPosition = player.position;
 
-	CameraRotation(camera, sensitivity); // player camera rotation
-	SetKeyboard(camera, moveSpeed, player); // player movement
-	ApplyGravity(player); // jump gravity
-	UpdatePlayerBoundingBox(player); // player collision
+	CameraRotation(camera, sensitivity);
+	SetKeyboard(camera, moveSpeed, player);
+	ApplyGravity(player);
+	UpdatePlayerBoundingBox(player);
+	CheckObjectCollection(player);
 
-	// Detect collision
 	if (currentLevel == LEVEL01) {
 		for (int i = 0; i < 4; i++) {
 			if (CheckCollisionBoxes(player.boundingBox, level01Collisions.walls[i])) {
