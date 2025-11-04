@@ -4,7 +4,10 @@
 #include "core.h"
 #include "menu.h"
 #include "window.h"
+#include "player.h"
 #include <iostream>
+
+
 
 typedef enum GameScreen { LOGO = 0, MENU = 1, GAMEPLAY = 2, ENDING = 3 } GameScreen;
 typedef enum MenuOption { BEGIN_GAME = 0, OPTIONS = 1, EXIT = 2 } GameOptions;
@@ -57,7 +60,7 @@ void RenderGame(Camera3D camera, GameLevels currentLevel, Texture2D hand1, float
 int main() {
 	const int screenWidth = 800;
 	const int screenHeight = 600;
-	float sensitivity = 0.3f, moveSpeed = 0.20f, time = 0.0f;
+	float sensitivity = 0.3f, moveSpeed = 10.0f, time = 0.0f;
 
 	displaySmallWindow();
 	int maximized = 0;
@@ -77,12 +80,18 @@ int main() {
 
 	SetTargetFPS(60);
 
-	Player player = { {0, 1.0f, 0}, 3.0f, 0.0f, true };
+	Player player = { {8.0f, 1.0f, 0}, 3.0f, 0.0f, true }; // posición de prueba
+	bool initialPos = false;
 	UpdatePlayerBoundingBox(player);
 
 	while (!WindowShouldClose()) {
 		BeginDrawing();
 		ClearBackground(BLACK);
+
+		/*cout << "FPS: " << GetFPS() << " | Pos: ("
+			<< player.position.x << ", "
+			<< player.position.y << ", "
+			<< player.position.z << ")\n";*/
 
 		if (IsKeyDown(KEY_F10)) {
 			if (maximized == 1) {
@@ -102,12 +111,18 @@ int main() {
 
 			if (currentOption == BEGIN_GAME && IsKeyPressed(KEY_ENTER)) {
 				currentScreen = GAMEPLAY;
+				cout << "Game start..." << endl;
 			}
 			if (currentOption == EXIT && IsKeyPressed(KEY_ENTER)) return 0;
 		}
 		else if (currentScreen == GAMEPLAY) {
 			GameLevels currentLevel = LEVEL01;
-			loadModels01(); // cargamos solo una vez
+			if (!initialPos) {
+				player.position = playerl01Position(); // posicion del jugador en el lvl. 1
+				initialPos = true;
+				loadModels01(); // cargamos solo una vez							
+			}
+
 			UpdateGame(&camera, sensitivity, moveSpeed, player, currentLevel);
 			time += GetFrameTime();
 			RenderGame(camera, currentLevel, hand1, time);

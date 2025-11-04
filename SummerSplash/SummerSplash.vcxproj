@@ -138,6 +138,7 @@
     <ClInclude Include="core.h" />
     <ClInclude Include="levels.h" />
     <ClInclude Include="menu.h" />
+    <ClInclude Include="player.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
